@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "229c7ed4-2731-4465-b48d-1ea632b79afa",
+		"name": "imovel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19081643"
+	},
+	"item": [
+		{
+			"name": "Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"endereco\": \"Rua A, 123\",\r\n    \"tipoImovel\": \"Casa\",\r\n    \"area\": 150.5,\r\n    \"preco\": 500000.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/imovel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"imovel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/imovel/d7c1dd10-9d13-11ee-ae74-c71b8ebecd7d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"imovel",
+						"d7c1dd10-9d13-11ee-ae74-c71b8ebecd7d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/imovel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"imovel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"dd83b5c0-9d13-11ee-ae74-c71b8ebecd7d\",\r\n    \"endereco\": \"Rua B, 123\",\r\n    \"tipoImovel\": \"Apartamento\",\r\n    \"area\": 150.5,\r\n    \"preco\": 500000.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/imovel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"imovel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/imovel/dd83b5c0-9d13-11ee-ae74-c71b8ebecd7d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"imovel",
+						"dd83b5c0-9d13-11ee-ae74-c71b8ebecd7d"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

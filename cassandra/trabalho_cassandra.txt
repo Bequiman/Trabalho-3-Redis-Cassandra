@@ -1,0 +1,263 @@
+docker exec -it sad_nash cqlsh
+
+1. Criação do keyspace(imoveis), table(imovel) e insert into na table(imovel);
+
+
+CREATE KEYSPACE IF NOT EXISTS imoveis
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+CREATE TABLE IF NOT EXISTS imovel (
+id UUID PRIMARY KEY,
+endereco TEXT,
+tipo_imovel TEXT,
+area FLOAT,
+preco FLOAT
+);
+
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Rua A, 123', 'Casa', 150.5, 500000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Avenida B, 456', 'Apartamento', 80.0, 300000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Travessa C, 789', 'Terreno', 80.0, 150000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Rua D, 321', 'Casa', 200.0, 600000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Avenida E, 654', 'Apartamento', 120.5, 400000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Rua F, 987', 'Terreno', 800.0, 250000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Avenida G, 1122', 'Casa', 180.0, 550000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Travessa H, 1365', 'Apartamento', 90.5, 320000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Rua I, 154', 'Casa', 220.0, 700000.00);
+
+INSERT INTO imovel (id, endereco, tipo_imovel, area, preco) VALUES
+(uuid(), 'Avenida J, 1789', 'Terreno', 550.0, 180000.00);
+
+
+2. Realize todas as operações/queries para testar o banco de dados.
+
+a. Consultas gerais;
+
+1º) Query que faz consulta de todos imóveis da tabela imovel.
+
+select * from imovel;
+
+ id                                   | area  | endereco         | preco   | tipo_imovel
+--------------------------------------+-------+------------------+---------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 |   Avenida E, 654 |   4e+05 | Apartamento
+ f03a4e5b-24af-4df5-b00e-ee5f7b70ff3a |  90.5 | Travessa H, 1365 | 3.2e+05 | Apartamento
+ 03415245-0521-464d-95fd-dabc8a803a14 |   550 |  Avenida J, 1789 | 1.8e+05 |     Terreno
+ b59e711f-30e1-44dc-8ee2-11eb41746451 | 150.5 |       Rua A, 123 |   5e+05 |        Casa
+ 963083f6-4472-4fea-99b6-ab5ac305796a |    80 |  Travessa C, 789 | 1.5e+05 |     Terreno
+ c2d8b05f-1450-4d78-8d24-c61c32926803 |   220 |       Rua I, 154 |   7e+05 |        Casa
+ 8cbb1c3e-335f-4e09-a83a-5ec517921fb5 |   800 |       Rua F, 987 | 2.5e+05 |     Terreno
+ 5d4d43da-71d1-45d1-8f58-3a075b04e0ba |    80 |   Avenida B, 456 |   3e+05 | Apartamento
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |   200 |       Rua D, 321 |   6e+05 |        Casa
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |   180 |  Avenida G, 1122 | 5.5e+05 |        Casa
+
+
+2º) Query que faz consulta do preço total do imóveis da tabela imovel.
+
+select cast(sum(preco) as decimal) from imovel;
+
+ cast(system.sum(preco) as decimal)
+------------------------------------
+                          3950000.0
+
+
+3º) Query que faz consulta do preço médio do imóveis da tabela imovel.
+
+ select cast(avg(preco) as decimal) from imovel;
+
+ cast(system.avg(preco) as decimal)
+------------------------------------
+                           395000.0
+
+4º) Query que faz consulta do imóvel com menor preço da tabela imovel.
+
+ select cast(max(preco) as decimal) from imovel;
+
+ cast(system.max(preco) as decimal)
+------------------------------------
+                           700000.0
+
+5º) Query que faz consulta do imóvel com menor preço da tabela imovel.
+
+
+select cast(min(preco) as decimal) from imovel;
+
+ cast(system.min(preco) as decimal)
+------------------------------------
+                           150000.0
+
+
+
+b. Consultas por condições;
+
+1º) Query que faz consulta dos imóveis com faixa de valor de 500000. 
+
+SELECT id, area, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel FROM imovel WHERE preco > 500000 ALLOW FILTERING;
+
+
+ id                                   | area | endereco        | preco    | tipo_imovel
+--------------------------------------+------+-----------------+----------+-------------
+ c2d8b05f-1450-4d78-8d24-c61c32926803 |  220 |      Rua I, 154 | 700000.0 |        Casa
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |  200 |      Rua D, 321 | 600000.0 |        Casa
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |  180 | Avenida G, 1122 | 550000.0 |        Casa
+
+
+2º) Query que faz consulta dos imóveis com área entre 100 e 180 metros quadrados.
+
+SELECT id, area, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel where area >= 100 and area <= 180 ALLOW FILTERING;
+
+ id                                   | area  | endereco        | preco    | tipo_imovel
+--------------------------------------+-------+-----------------+----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 |  Avenida E, 654 | 400000.0 | Apartamento
+ b59e711f-30e1-44dc-8ee2-11eb41746451 | 150.5 |      Rua A, 123 | 500000.0 |        Casa
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |   180 | Avenida G, 1122 | 550000.0 |        Casa
+
+
+
+c. Alteração de dados em colunas;
+
+1º) Atualizar preco de um determinado imóvel da tabela imovel.
+
+Antes do update do preco do imovel.
+
+SELECT id, area, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel where id = c4baab4d-ea09-46f8-b17c-1281b3202b1e;
+
+ id                                   | area  | endereco       | preco    | tipo_imovel
+--------------------------------------+-------+----------------+----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 | Avenida E, 654 | 400000.0 | Apartamento
+
+
+
+UPDATE imovel SET preco = 2000000.00 WHERE id = c4baab4d-ea09-46f8-b17c-1281b3202b1e;
+
+
+Depois do update do preco do imovel.
+
+SELECT id, area, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel where id = c4baab4d-ea09-46f8-b17c-1281b3202b1e;
+
+ id                                   | area  | endereco       | preco     | tipo_imovel
+--------------------------------------+-------+----------------+-----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 | Avenida E, 654 | 2000000.0 | Apartamento
+
+
+2º) Atualizar preco e tipo_imovel de um determinado imóvel da tabela imovel.
+
+Antes do update do preco e do tipo_imovel do imovel.
+
+SELECT id, area, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel where id = 3bab322d-49a9-407e-95a9-11b56e8cbac2;
+
+ id                                   | area | endereco   | preco    | tipo_imovel
+--------------------------------------+------+------------+----------+-------------
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |  200 | Rua D, 321 | 600000.0 |        Casa
+
+
+UPDATE imovel SET preco = 4000000.00, tipo_imovel = 'Terreno' WHERE id = 3bab322d-49a9-407e-95a9-11b56e8cbac2;
+
+
+Depois do update do preco do imovel.
+
+SELECT id, area, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel where id = 3bab322d-49a9-407e-95a9-11b56e8cbac2;
+
+ id                                   | area | endereco   | preco     | tipo_imovel
+--------------------------------------+------+------------+-----------+-------------
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |  200 | Rua D, 321 | 4000000.0 |     Terreno
+
+
+
+d. Adição de campos em colunas;
+
+ALTER TABLE imovel ADD area_de_risco text;
+
+SELECT id, area, area_de_risco, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel;
+
+
+ id                                   | area  | area_de_risco | endereco         | preco     | tipo_imovel
+--------------------------------------+-------+---------------+------------------+-----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 |          null |   Avenida E, 654 | 2000000.0 | Apartamento
+ f03a4e5b-24af-4df5-b00e-ee5f7b70ff3a |  90.5 |          null | Travessa H, 1365 |  320000.0 | Apartamento
+ 03415245-0521-464d-95fd-dabc8a803a14 |   550 |       	 null |  Avenida J, 1789 |  180000.0 |     Terreno
+ b59e711f-30e1-44dc-8ee2-11eb41746451 | 150.5 |          null |       Rua A, 123 |  500000.0 |        Casa
+ 963083f6-4472-4fea-99b6-ab5ac305796a |    80 |          null |  Travessa C, 789 |  150000.0 |     Terreno
+ c2d8b05f-1450-4d78-8d24-c61c32926803 |   220 |          null |       Rua I, 154 |  700000.0 |        Casa
+ 8cbb1c3e-335f-4e09-a83a-5ec517921fb5 |   800 |          null |       Rua F, 987 |  250000.0 |     Terreno
+ 5d4d43da-71d1-45d1-8f58-3a075b04e0ba |    80 |          null |   Avenida B, 456 |  300000.0 | Apartamento
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |   200 |          null |       Rua D, 321 | 4000000.0 |     Terreno
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |   180 |          null |  Avenida G, 1122 |  550000.0 |        Casa
+
+
+SELECT id, area, area_de_risco, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel;
+
+UPDATE imovel SET area_de_risco = 'não' WHERE id = c4baab4d-ea09-46f8-b17c-1281b3202b1e;
+UPDATE imovel SET area_de_risco = 'sim' WHERE id =  f03a4e5b-24af-4df5-b00e-ee5f7b70ff3a;
+UPDATE imovel SET area_de_risco = 'sim' WHERE id =  03415245-0521-464d-95fd-dabc8a803a14;
+UPDATE imovel SET area_de_risco = 'não' WHERE id =  b59e711f-30e1-44dc-8ee2-11eb41746451;
+UPDATE imovel SET area_de_risco = 'sim' WHERE id = 963083f6-4472-4fea-99b6-ab5ac305796a;
+UPDATE imovel SET area_de_risco = 'não' WHERE id = c2d8b05f-1450-4d78-8d24-c61c32926803;
+UPDATE imovel SET area_de_risco = 'não' WHERE id = 8cbb1c3e-335f-4e09-a83a-5ec517921fb5;
+UPDATE imovel SET area_de_risco = 'não' WHERE id = 5d4d43da-71d1-45d1-8f58-3a075b04e0ba;
+UPDATE imovel SET area_de_risco = 'não' WHERE id = 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7;
+
+
+ id                                   | area  | area_de_risco | endereco         | preco     | tipo_imovel
+--------------------------------------+-------+---------------+------------------+-----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 |           não |   Avenida E, 654 | 2000000.0 | Apartamento
+ f03a4e5b-24af-4df5-b00e-ee5f7b70ff3a |  90.5 |           sim | Travessa H, 1365 |  320000.0 | Apartamento
+ 03415245-0521-464d-95fd-dabc8a803a14 |   550 |           sim |  Avenida J, 1789 |  180000.0 |     Terreno
+ b59e711f-30e1-44dc-8ee2-11eb41746451 | 150.5 |           não |       Rua A, 123 |  500000.0 |        Casa
+ 963083f6-4472-4fea-99b6-ab5ac305796a |    80 |           sim |  Travessa C, 789 |  150000.0 |     Terreno
+ c2d8b05f-1450-4d78-8d24-c61c32926803 |   220 |           não |       Rua I, 154 |  700000.0 |        Casa
+ 8cbb1c3e-335f-4e09-a83a-5ec517921fb5 |   800 |           não |       Rua F, 987 |  250000.0 |     Terreno
+ 5d4d43da-71d1-45d1-8f58-3a075b04e0ba |    80 |           não |   Avenida B, 456 |  300000.0 | Apartamento
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |   200 |           não |       Rua D, 321 | 4000000.0 |     Terreno
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |   180 |           não |  Avenida G, 1122 |  550000.0 |        Casa
+
+
+e. Remoção de informações
+
+SELECT id, area, area_de_risco, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel;
+
+ id                                   | area  | area_de_risco | endereco         | preco     | tipo_imovel
+--------------------------------------+-------+---------------+------------------+-----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 |           não |   Avenida E, 654 | 2000000.0 | Apartamento
+ f03a4e5b-24af-4df5-b00e-ee5f7b70ff3a |  90.5 |           sim | Travessa H, 1365 |  320000.0 | Apartamento
+ 03415245-0521-464d-95fd-dabc8a803a14 |   550 |           sim |  Avenida J, 1789 |  180000.0 |     Terreno
+ b59e711f-30e1-44dc-8ee2-11eb41746451 | 150.5 |           não |       Rua A, 123 |  500000.0 |        Casa
+ 963083f6-4472-4fea-99b6-ab5ac305796a |    80 |           sim |  Travessa C, 789 |  150000.0 |     Terreno
+ c2d8b05f-1450-4d78-8d24-c61c32926803 |   220 |           não |       Rua I, 154 |  700000.0 |        Casa
+ 8cbb1c3e-335f-4e09-a83a-5ec517921fb5 |   800 |           não |       Rua F, 987 |  250000.0 |     Terreno
+ 5d4d43da-71d1-45d1-8f58-3a075b04e0ba |    80 |           não |   Avenida B, 456 |  300000.0 | Apartamento
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |   200 |           não |       Rua D, 321 | 4000000.0 |     Terreno
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |   180 |           não |  Avenida G, 1122 |  550000.0 |        Casa
+
+
+DELETE FROM imovel WHERE id = 963083f6-4472-4fea-99b6-ab5ac305796a;
+
+SELECT id, area, area_de_risco, endereco, CAST(preco AS DECIMAL) as preco, tipo_imovel from imovel;
+
+ id                                   | area  | area_de_risco | endereco         | preco     | tipo_imovel
+--------------------------------------+-------+---------------+------------------+-----------+-------------
+ c4baab4d-ea09-46f8-b17c-1281b3202b1e | 120.5 |           não |   Avenida E, 654 | 2000000.0 | Apartamento
+ f03a4e5b-24af-4df5-b00e-ee5f7b70ff3a |  90.5 |           sim | Travessa H, 1365 |  320000.0 | Apartamento
+ 03415245-0521-464d-95fd-dabc8a803a14 |   550 |           sim |  Avenida J, 1789 |  180000.0 |     Terreno
+ b59e711f-30e1-44dc-8ee2-11eb41746451 | 150.5 |           não |       Rua A, 123 |  500000.0 |        Casa
+ c2d8b05f-1450-4d78-8d24-c61c32926803 |   220 |           não |       Rua I, 154 |  700000.0 |        Casa
+ 8cbb1c3e-335f-4e09-a83a-5ec517921fb5 |   800 |           não |       Rua F, 987 |  250000.0 |     Terreno
+ 5d4d43da-71d1-45d1-8f58-3a075b04e0ba |    80 |           não |   Avenida B, 456 |  300000.0 | Apartamento
+ 3bab322d-49a9-407e-95a9-11b56e8cbac2 |   200 |           não |       Rua D, 321 | 4000000.0 |     Terreno
+ 61c6ef5d-6f0e-4585-a159-d2bbf6b5e8a7 |   180 |           não |  Avenida G, 1122 |  550000.0 |        Casa
